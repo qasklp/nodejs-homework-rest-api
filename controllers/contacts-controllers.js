@@ -1,6 +1,6 @@
-const contacts = require('../../models/contacts');
+const contacts = require('../models/contacts');
 const Joi = require("joi");
-const { HttpError } = require("../../helpers");
+const { HttpError } = require("../helpers");
 
 const addSchema = Joi.object({
   name: Joi.string().min(3).max(30).required().messages({

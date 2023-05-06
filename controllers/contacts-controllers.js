@@ -42,7 +42,7 @@ const updateFavorite = async (req, res) => {
 
 const deleteContact = async (req, res) => {
     const { contactId } = req.params;
-    const result = await Contact.removeContact(contactId);
+    const result = await Contact.findByIdAndDelete(contactId);
     if (!result) {
       throw HttpError(404,"Not found");
     }

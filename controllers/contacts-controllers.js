@@ -1,10 +1,6 @@
-const express = require('express');
 const contacts = require('../../models/contacts');
 const Joi = require("joi");
-
 const { HttpError } = require("../../helpers");
-
-const router = express.Router();
 
 const addSchema = Joi.object({
   name: Joi.string().min(3).max(30).required().messages({
@@ -18,17 +14,7 @@ const addSchema = Joi.object({
   }),
 })
 
-router.get('/', async (req, res, next) => {
-  try {
-    const result = await contacts.listContacts();
-    res.json(result);
-  }
-  catch(error) {
-    next(error);
-  }
-})
-
-router.get('/:contactId', async (req, res, next) => {
+const getContactById = async (req, res, next) => {
   try {
     const { contactId } = req.params;
     const result = await contacts.getContactById(contactId);
@@ -40,9 +26,19 @@ router.get('/:contactId', async (req, res, next) => {
   catch (error) {
     next(error);
   }
-})
+}
 
-router.post('/', async (req, res, next) => {
+const getAllContacts =  async (req, res, next) => {
+  try {
+    const result = await contacts.listContacts();
+    res.json(result);
+  }
+  catch(error) {
+    next(error);
+  }
+}
+
+const addContact = async (req, res, next) => {
   try {
     const { error } = addSchema.validate(req.body);
     if (error) {
@@ -54,23 +50,9 @@ router.post('/', async (req, res, next) => {
   catch (error) {
     next(error);
   }
-})
+}
 
-router.delete('/:contactId', async (req, res, next) => {
-  try {
-    const { contactId } = req.params;
-    const result = await contacts.removeContact(contactId);
-    if (!result) {
-      throw HttpError(404,"Not found");
-    }
-    res.json({"message": "contact deleted"});
-  }
-  catch (error) {
-    next(error);
-  }
-})
-
-router.put('/:contactId', async (req, res, next) => {
+const updateContact = async (req, res, next) => {
   try {
     const { error } = addSchema.validate(req.body);
     if (error) {
@@ -86,6 +68,26 @@ router.put('/:contactId', async (req, res, next) => {
   catch (error) {
     next(error);
   }
-})
+}
 
-module.exports = router
+const deleteContact = async (req, res, next) => {
+  try {
+    const { contactId } = req.params;
+    const result = await contacts.removeContact(contactId);
+    if (!result) {
+      throw HttpError(404,"Not found");
+    }
+    res.json({"message": "contact deleted"});
+  }
+  catch (error) {
+    next(error);
+  }
+}
+
+module.exports = {
+  getAllContacts,
+  getContactById,
+  addContact,
+  updateContact,
+  deleteContact
+}
